@@ -26,6 +26,10 @@ const angularApp = new AngularNodeAppEngine();
  * ```
  */
 
+app.get('/api/facts', async (req, res) => {
+  res.send(['happy', 'day']);
+});
+
 /**
  * Serve static files from /browser
  */

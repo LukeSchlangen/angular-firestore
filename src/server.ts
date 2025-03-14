@@ -16,6 +16,13 @@ type Task = {
   status: 'IN_PROGRESS' | 'COMPLETE';
 };
 
+initializeApp({
+  credential: applicationDefault(),
+});
+
+const db = getFirestore();
+const tasksRef = db.collection('tasks');
+
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
@@ -23,12 +30,6 @@ const app = express();
 const angularApp = new AngularNodeAppEngine();
 
 app.get('/api/facts', async (req, res) => {
-  initializeApp({
-    credential: applicationDefault(),
-  });
-  
-  const db = getFirestore();
-  const tasksRef = db.collection('tasks');
   const snapshot = await tasksRef.orderBy('createdAt', 'desc').limit(100).get();
   const tasks = await snapshot.docs.map(doc => ({
     id: doc.id,

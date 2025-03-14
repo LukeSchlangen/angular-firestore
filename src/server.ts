@@ -7,6 +7,14 @@ import {
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { initializeApp, applicationDefault } from 'firebase-admin/app';
+import { getFirestore } from 'firebase-admin/firestore';
+
+type Task = {
+  id: string;
+  title: string;
+  status: 'IN_PROGRESS' | 'COMPLETE';
+};
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -14,20 +22,20 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/**', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
-
 app.get('/api/facts', async (req, res) => {
-  res.send(['happy', 'day']);
+  initializeApp({
+    credential: applicationDefault(),
+  });
+  
+  const db = getFirestore();
+  const tasksRef = db.collection('tasks');
+  const snapshot = await tasksRef.orderBy('createdAt', 'desc').limit(100).get();
+  const tasks = await snapshot.docs.map(doc => ({
+    id: doc.id,
+    title: doc.data()['title'],
+    status: doc.data()['status'],
+  }));
+  res.send(tasks.map(task => JSON.stringify(task)));
 });
 
 /**

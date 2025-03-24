@@ -16,9 +16,9 @@ type Task = {
   status: 'IN_PROGRESS' | 'COMPLETE';
 };
 
-initializeApp({
-  credential: applicationDefault(),
-});
+const credential = applicationDefault();
+
+initializeApp({ credential });
 
 const db = getFirestore();
 const tasksRef = db.collection('tasks');

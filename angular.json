@@ -61,7 +61,8 @@
             "outputMode": "server",
             "ssr": {
               "entry": "src/server.ts"
-            }
+            },
+            "externalDependencies": ["firebase-admin"]
           },
           "configurations": {
             "production": {

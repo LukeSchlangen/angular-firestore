@@ -29,12 +29,13 @@ type Task = {
             <table>
                 <tbody>
                     @for(task of tasks(); track task) {
+                        @let isComplete = task.status === 'COMPLETE';
                         <tr>
                             <td>
                                 <input
-                                    (click)="updateTask(task, {status: task.status === 'COMPLETE' ? 'COMPLETE' : 'IN_PROGRESS'})"
+                                    (click)="updateTask(task, {status: isComplete ? 'IN_PROGRESS' : 'COMPLETE'})"
                                     type="checkbox"
-                                    checked={isComplete}
+                                    [checked]="isComplete"
                                 />
                             </td>
                             <td>{{task.title}}</td>

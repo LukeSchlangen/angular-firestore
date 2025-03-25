@@ -43,7 +43,6 @@ app.get('/api/tasks', async (req, res) => {
     status: doc.data()['status'],
     createdAt: doc.data()['createdAt'],
   }));
-  console.log({tasks})
   res.send(tasks);
 });
 

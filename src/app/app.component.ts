@@ -80,6 +80,7 @@ export class AppComponent {
                 createdAt: Date.now(),
             }),
         });
+        this.newTaskTitle = '';
         await this.getTasks();
     }
 

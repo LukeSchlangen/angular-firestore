@@ -2,6 +2,12 @@
 import { Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
+type Task = {
+    id: string;
+    title: string;
+    status: 'IN_PROGRESS' | 'COMPLETE';
+};
+
 @Component({
     selector: 'app-root',
     standalone: true,
@@ -15,27 +21,34 @@ import { FormsModule } from '@angular/forms';
                 class="text-black border-2 p-2 m-2 rounded"
             />
             <button
-                (click)="getNewFunFacts()"
+                (click)="getTasks()"
             >
                 Get New Fun Facts
             </button>
-            <ol>
-                @for(fact of facts(); track fact) {
-                    <li>{{fact}}</li>  
-                } @empty {
-                    <li>No facts are available</li>
-                }
-            </ol>
+            <table>
+                <tbody>
+                    @for(fact of facts(); track fact) {
+                        <tr>
+                            <td>{{fact.title}}</td>
+                            <td>{{fact.status}}</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </section>
     `,
     styles: '',
 })
 export class AppComponent {
     animal = '';
-    facts = signal<string[]>([]);
+    facts = signal<Task[]>([]);
+    constructor() {
+        this.getTasks();
+    }
 
-    getNewFunFacts() {
-        fetch(`/api/facts?animal=${this.animal}`).then(response => response.json()).then(facts => {
+    getTasks() {
+        fetch(`/api/tasks`).then(response => response.json()).then(facts => {
+            console.log(facts);
             this.facts.set(facts);
         });
     }

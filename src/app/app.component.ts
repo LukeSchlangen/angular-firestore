@@ -41,7 +41,9 @@ type Task = {
                             <td>{{task.title}}</td>
                             <td>{{task.status}}</td>
                             <td>
-                                <button>Delete</button>
+                                <button
+                                    (click)="deleteTask(task)"
+                                >Delete</button>
                             </td>
                         </tr>
                     }
@@ -55,10 +57,12 @@ export class AppComponent {
     newTaskTitle = '';
     tasks = signal<Task[]>([]);
     constructor() {
-        this.getTasks();
+        if (typeof window !== 'undefined') {
+            this.getTasks();
+        }
     }
 
-    getTasks() {
+    async getTasks() {
         fetch(`/api/tasks`).then(response => response.json()).then(tasks => {
             this.tasks.set(tasks);
         });
@@ -76,7 +80,7 @@ export class AppComponent {
                 createdAt: Date.now(),
             }),
         });
-        this.getTasks();
+        await this.getTasks();
     }
 
     async updateTask(task: Task, newTaskValues: Partial<Task>) {
@@ -87,6 +91,15 @@ export class AppComponent {
             },
             body: JSON.stringify({...task, ...newTaskValues}),
         });
-        this.getTasks();
+        await this.getTasks();
+    }
+
+    async deleteTask(task : any){
+        await fetch('/api/tasks', {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(task),
+        });
+        await this.getTasks();
     }
 }

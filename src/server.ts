@@ -14,6 +14,7 @@ type Task = {
   id: string;
   title: string;
   status: 'IN_PROGRESS' | 'COMPLETE';
+  createdAt: number;
 };
 
 const credential = applicationDefault();
@@ -40,7 +41,9 @@ app.get('/api/tasks', async (req, res) => {
     id: doc.id,
     title: doc.data()['title'],
     status: doc.data()['status'],
+    createdAt: doc.data()['createdAt'],
   }));
+  console.log({tasks})
   res.send(tasks);
 });
 

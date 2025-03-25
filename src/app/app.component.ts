@@ -6,6 +6,7 @@ type Task = {
     id: string;
     title: string;
     status: 'IN_PROGRESS' | 'COMPLETE';
+    createdAt: number;
 };
 
 @Component({
@@ -16,21 +17,31 @@ type Task = {
         <section>
             <input
                 type="text"
-                placeholder="dog"
-                [(ngModel)]="animal"
+                placeholder="New Task Title"
+                [(ngModel)]="newTaskTitle"
                 class="text-black border-2 p-2 m-2 rounded"
             />
             <button
-                (click)="getTasks()"
+                (click)="addTask()"
             >
-                Get New Fun Facts
+                Add new task
             </button>
             <table>
                 <tbody>
-                    @for(fact of facts(); track fact) {
+                    @for(task of tasks(); track task) {
                         <tr>
-                            <td>{{fact.title}}</td>
-                            <td>{{fact.status}}</td>
+                            <td>
+                                <input
+                                    (click)="updateTask(task, {status: task.status === 'COMPLETE' ? 'COMPLETE' : 'IN_PROGRESS'})"
+                                    type="checkbox"
+                                    checked={isComplete}
+                                />
+                            </td>
+                            <td>{{task.title}}</td>
+                            <td>{{task.status}}</td>
+                            <td>
+                                <button>Delete</button>
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -40,16 +51,41 @@ type Task = {
     styles: '',
 })
 export class AppComponent {
-    animal = '';
-    facts = signal<Task[]>([]);
+    newTaskTitle = '';
+    tasks = signal<Task[]>([]);
     constructor() {
         this.getTasks();
     }
 
     getTasks() {
-        fetch(`/api/tasks`).then(response => response.json()).then(facts => {
-            console.log(facts);
-            this.facts.set(facts);
+        fetch(`/api/tasks`).then(response => response.json()).then(tasks => {
+            this.tasks.set(tasks);
         });
+    }
+
+    async addTask() {
+        await fetch(`/api/tasks`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: this.newTaskTitle,
+                status: 'IN_PROGRESS',
+                createdAt: Date.now(),
+            }),
+        });
+        this.getTasks();
+    }
+
+    async updateTask(task: Task, newTaskValues: Partial<Task>) {
+        await fetch(`/api/tasks`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({...task, ...newTaskValues}),
+        });
+        this.getTasks();
     }
 }

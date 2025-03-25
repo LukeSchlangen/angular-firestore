@@ -41,9 +41,9 @@ type Task = {
                             <td>{{task.title}}</td>
                             <td>{{task.status}}</td>
                             <td>
-                                <button
-                                    (click)="deleteTask(task)"
-                                >Delete</button>
+                                <button (click)="deleteTask(task)">
+                                    Delete
+                                </button>
                             </td>
                         </tr>
                     }
@@ -63,17 +63,15 @@ export class AppComponent {
     }
 
     async getTasks() {
-        fetch(`/api/tasks`).then(response => response.json()).then(tasks => {
-            this.tasks.set(tasks);
-        });
+        const response = await fetch(`/api/tasks`);
+        const tasks = await response.json();
+        this.tasks.set(tasks);
     }
 
     async addTask() {
         await fetch(`/api/tasks`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 title: this.newTaskTitle,
                 status: 'IN_PROGRESS',
@@ -87,18 +85,16 @@ export class AppComponent {
     async updateTask(task: Task, newTaskValues: Partial<Task>) {
         await fetch(`/api/tasks`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({...task, ...newTaskValues}),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...task, ...newTaskValues }),
         });
         await this.getTasks();
     }
 
-    async deleteTask(task : any){
+    async deleteTask(task: any) {
         await fetch('/api/tasks', {
             method: 'DELETE',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(task),
         });
         await this.getTasks();

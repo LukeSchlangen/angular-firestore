@@ -1,6 +1,7 @@
 // app.component.ts
-import { Component, signal } from '@angular/core';
+import { Component, signal, Inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { APP_BASE_HREF } from '@angular/common';
 
 type Task = {
   id: string;
@@ -51,20 +52,18 @@ export class AppComponent {
   newTaskTitle = '';
   tasks = signal<Task[]>([]);
 
-  constructor() {
-    if (typeof window !== 'undefined') {
-      this.getTasks();
-    }
+  constructor(@Inject(APP_BASE_HREF) private baseHref: string) {
+    this.getTasks();
   }
 
   async getTasks() {
-    const response = await fetch(`/api/tasks`);
+    const response = await fetch(`${this.baseHref}/api/tasks`);
     const tasks = await response.json();
     this.tasks.set(tasks);
   }
 
   async addTask() {
-    await fetch(`/api/tasks`, {
+    await fetch(`${this.baseHref}/api/tasks`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -78,7 +77,7 @@ export class AppComponent {
   }
 
   async updateTask(task: Task, newTaskValues: Partial<Task>) {
-    await fetch(`/api/tasks`, {
+    await fetch(`${this.baseHref}/api/tasks`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...task, ...newTaskValues }),
@@ -87,7 +86,7 @@ export class AppComponent {
   }
 
   async deleteTask(task: any) {
-    await fetch('/api/tasks', {
+    await fetch(`${this.baseHref}/api/tasks`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(task),

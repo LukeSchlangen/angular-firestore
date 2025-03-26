@@ -1,5 +1,5 @@
 // app.component.ts
-import { Component, signal } from '@angular/core';
+import { afterNextRender, Component, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 type Task = {
@@ -52,9 +52,9 @@ export class AppComponent {
   tasks = signal<Task[]>([]);
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      this.getTasks();
-    }
+    afterNextRender({
+      earlyRead: () => this.getTasks()
+    });
   }
 
   async getTasks() {
